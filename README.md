@@ -2,7 +2,7 @@
 [![C++ Version](https://img.shields.io/badge/C++-23+-darkblue.svg)](https://isocpp.org/)
 [![CMake](https://img.shields.io/badge/CMake-3.15+-violet.svg)](https://cmake.org/)
 
-This is an educational project implementing a simple single-threaded in-memory NoSQL database managemenet system. The system supports databases made up of key-value pairs, where the key is a string and the value is a JSON object.
+This is an educational project implementing a simple single-threaded in-memory NoSQL database management system. The system supports databases made up of key-value pairs, where the key is a string and the value is a JSON object.
 
 ## Usage
 Use the `SDBMS` command in your terminal to launch the CLI. 
