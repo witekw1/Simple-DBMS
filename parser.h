@@ -27,12 +27,11 @@ public:
     bool run = true;
 
 private:
-    static inline const std::set<std::string> commands = {"PUT",    "PUT_FILE", "GET",  "DEL",    "OPEN",
-                                                          "CREATE", "LIST",     "QUIT", "BACKUP", "LOAD"};
+    static inline const std::set<std::string> commands = {"PUT",  "PUT_FILE", "GET",    "DEL",  "OPEN", "CREATE",
+                                                          "LIST", "QUIT",     "BACKUP", "LOAD", "HELP"};
     static inline const std::chrono::milliseconds backup_interval{300'000};
     std::istream &input;
     std::ostream &output;
     Database *db = nullptr;
     std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 };
-

@@ -19,6 +19,32 @@ Parser::~Parser() {
     db = nullptr;
 }
 
+void display_help() {
+    cout << "The CLI supports the following commands:\n - CREATE [NAME] [FIELDS] - creates a database with the name "
+            "[NAME] and the fields (column names) [FIELDS] (none of the fields can be \"key\"). The fields should be "
+            "space-separated, and each database has to have a unique name. \n - LIST- lists all "
+            "the created databases.\n - OPEN [NAME] - open the database with the name [NAME].\n - PUT [KEY1];[VALUE1] "
+            "[KEY2];[VALUE2] ... - inserts the specified key-value pairs into the currently open database. Note that "
+            "the [VALUE] field has to be a valid JSON and can't contain whitespaces. The keys at the first indentation "
+            "level of the JSON have to be the same as the field names of the database.\n - PUT_FILE [KEY1];[FILENAME1] "
+            "[KEY2];[FILENAME2] - same as PUT but with the names of files containing the JSON objects (the files can "
+            "contain whitespaces). FILENAME has to be the absolute path to the file.\n - GET [KEY1] [KEY2] ... - displays "
+            "the data stored in the currently open database under the specified keys. You can also use \"*\" to get "
+            "all of the available data.\n - GET WHERE [CONDITION] - displays the data satisfying the "
+            "[CONDITION]. The condition has to be in the format: [FIELD] [OPERATOR] [VALUE]. [FIELD] has to be "
+            "one of the fields of the currently open database or key, in which case the the command will "
+            "display the data where the key satisfies the condition. [OPERATOR] has to be one of the following "
+            "binary operators: <, >, ==, !=, <=, >= . [VALUE] has to be a numeric value.\n - DEL [KEY1] [KEY2] "
+            "... - deletes the data stored in the currently open database under the specified keys.\n - DEL WHERE "
+            "[CONDITION] - deletes the data stored in the currently open database that satisfies the "
+            "condition. What is a condition is specified in the description of the GET WHERE command.\n - BACKUP "
+            "- dumps the contents of the currently open database into a file stored in the backups/ directory. "
+            "The name of the backup file is in the format forced_[YYYY-MM-DD]_[HH-mm-ss].bckp. Note that the "
+            "file may not appear in the filesystem until the CLI is closed.\n - LOAD [FILENAME] - load the backup "
+            "with the specified filename. The file has to exist in the backups/ directory.\n - QUIT - close the "
+            "CLI.\n - HELP - display this information.\n";
+}
+
 istream &Parser::parse_line() {
     timed_backup();
     string line;
@@ -244,6 +270,8 @@ istream &Parser::parse_line() {
             output << e.what() << "\n";
             return input;
         }
+    } else if (command == "HELP") {
+        display_help();
     } else if (command == "QUIT") {
         run = false;
     }
@@ -258,6 +286,7 @@ public:
                "containing a JSON.\n";
     }
 };
+
 
 Database::row Parser::parse_row(const std::string &r) {
     if (!r.contains(";")) {
@@ -308,7 +337,7 @@ bool Parser::print_failures(const std::vector<std::string> &keys, const std::vec
         return false;
     if (!keys.empty()) {
         output << "Failed for keys: ";
-        for (auto key: failures)
+        for (const auto& key: failures)
             output << key << " ";
         output << "\n";
     }
@@ -367,7 +396,8 @@ void Parser::backup() const {
     ofstream file;
     const auto now = std::chrono::system_clock::now();
     auto now_sec = std::chrono::floor<std::chrono::seconds>(now);
-    std::string filename = string(PROJECT_SOURCE_DIR) + "/backups/forced_" + std::format("{:%Y-%m-%d_%H-%M-%S}", now_sec) + ".bckp";
+    std::string filename =
+            string(PROJECT_SOURCE_DIR) + "/backups/forced_" + std::format("{:%Y-%m-%d_%H-%M-%S}", now_sec) + ".bckp";
     file.open(filename, ios::out | ios::trunc);
     if (!file.is_open()) {
         throw ios_base::failure("Backup failed; the file did not open properly");
