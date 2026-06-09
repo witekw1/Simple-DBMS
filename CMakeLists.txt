@@ -14,6 +14,21 @@ add_executable(SDBMS
         where.h
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+        tlx
+        GIT_REPOSITORY git@github.com:tlx/tlx.git
+        GIT_TAG master
+)
+
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY git@github.com:nlohmann/json.git
+        GIT_TAG v3.11.2
+)
+
+FetchContent_MakeAvailable(tlx json)
 
 target_link_libraries(SDBMS PRIVATE
         nlohmann_json::nlohmann_json
