@@ -1,0 +1,16 @@
+#include <iostream>
+#include "parser.h"
+using namespace std;
+
+int main() {
+    Parser p;
+    while (p.run) {
+        p.parse_line();
+    }
+    return 0;
+}
+/*
+DB
+OPEN DB
+PUT key1;{"a":{"one":1},"b":{"two":2}}
+*/
