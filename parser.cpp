@@ -252,7 +252,7 @@ istream &Parser::parse_line() {
 
 class invalid_row : std::exception {
 public:
-    const char *what() const noexcept override {
+    [[nodiscard]] const char *what() const noexcept override {
         return "Invalid argument(s) of PUT; the arguments should be a space-separated sequence in the format "
                "\"[KEY];[VALUE]\", where [VALUE] is either a string representing a JSON or a filename of a file "
                "containing a JSON.\n";
@@ -269,7 +269,7 @@ Database::row Parser::parse_row(const std::string &r) {
     getline(ss, value);
     try {
         nlohmann::json value_json = nlohmann::json::parse(value);
-        return Database::row(key, value_json);
+        return {key, value_json};
     } catch (std::exception &) {
         throw;
     }
@@ -290,7 +290,7 @@ Database::row Parser::parse_row_from_file(const std::string &r) {
             throw ios_base::failure("The file containing the JSON did not open");
         }
         nlohmann::json value_json = nlohmann::json::parse(fs);
-        return Database::row(key, value_json);
+        return {key, value_json};
     } catch (std::exception &) {
         throw;
     }
@@ -367,7 +367,7 @@ void Parser::backup() const {
     ofstream file;
     const auto now = std::chrono::system_clock::now();
     auto now_sec = std::chrono::floor<std::chrono::seconds>(now);
-    std::string filename = "backups/forced_" + std::format("{:%Y-%m-%d_%H-%M-%S}", now_sec) + ".bckp";
+    std::string filename = string(PROJECT_SOURCE_DIR) + "/backups/forced_" + std::format("{:%Y-%m-%d_%H-%M-%S}", now_sec) + ".bckp";
     file.open(filename, ios::out | ios::trunc);
     if (!file.is_open()) {
         throw ios_base::failure("Backup failed; the file did not open properly");
@@ -380,7 +380,7 @@ void Parser::backup() const {
 
 bool Parser::load(std::string &filename) const {
     ifstream file;
-    filename = "backups/" + filename;
+    filename = string(PROJECT_SOURCE_DIR) + "/backups/" + filename;
     file.open(filename, ios::in);
     output << filename << endl;
     if (!file.is_open()) {
@@ -411,7 +411,7 @@ void Parser::timed_backup() const {
     if (duration < backup_interval || db == nullptr)
         return;
     ofstream file;
-    const string filename = "backups/regular_backup_" + db->name + ".bckp";
+    const string filename = string(PROJECT_SOURCE_DIR) + "/backups/regular_backup_" + db->name + ".bckp";
     file.open(filename, ios::trunc);
     if (!file.is_open())
         throw ios_base::failure("Timed backup failed; error opening the \"regular_backup.bckp\" file");

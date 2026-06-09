@@ -35,3 +35,4 @@ private:
     Database *db = nullptr;
     std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 };
+
