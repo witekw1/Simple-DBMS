@@ -20,6 +20,7 @@ The CLI supports the following commands:
  * `BACKUP` - dumps the contents of the currently open database into a file stored in the `backups/` directory. The name of the backup file is in the format `forced_[YYYY-MM-DD]_[HH-mm-ss].bckp`. Note that the file may not appear in the filesystem until the CLI is closed.
  * `LOAD [FILENAME]` - load the backup with the specified filename. The file has to exist in the `backups/` directory.
  * `QUIT` - close the CLI.
+ * `HELP` - display this information.
    
 > [!NOTE]
 > Additionally, the engine will automatically create a backup of the currently open database every 5 minutes (checked when running a command), and save it in the backup folder under the name `"regular_backup_[NAME].bckp"` where `[NAME]` is the name of the currently open database.
