@@ -411,7 +411,8 @@ void Parser::timed_backup() const {
     if (duration < backup_interval || db == nullptr)
         return;
     ofstream file;
-    file.open("backups/regular_backup.bckp", ios::trunc);
+    const string filename = "backups/regular_backup_" + db->name + ".bckp";
+    file.open(filename, ios::trunc);
     if (!file.is_open())
         throw ios_base::failure("Timed backup failed; error opening the \"regular_backup.bckp\" file");
     for (const auto &row: db->get(vector<string>{"*"}).second) {

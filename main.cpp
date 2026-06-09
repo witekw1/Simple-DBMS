@@ -9,8 +9,3 @@ int main() {
     }
     return 0;
 }
-/*
-DB
-OPEN DB
-PUT key1;{"a":{"one":1},"b":{"two":2}}
-*/
