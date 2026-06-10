@@ -93,10 +93,7 @@ std::vector<Database::row> Database::get_where(const Where &where) const {
             end = it;
         } else if (where.op == "<=") {
             start = storage.begin();
-            if (storage.find(argument) == storage.end())
-                end = it;
-            else
-                end = ++it;
+            end = storage.upper_bound(argument);
         } else if (where.op == "==") {
             result.push_back(get(where.rhs).second);
             return result;
@@ -109,16 +106,19 @@ std::vector<Database::row> Database::get_where(const Where &where) const {
         });
     } else if (std::ranges::find(fields_, where.lhs) != fields_.end()) {
         for (const auto &x: storage) {
-            if (where.op == ">" && x.second[where.lhs].dump() > where.rhs)
-                result.push_back(x);
-            else if (where.op == ">=" && x.second[where.lhs].dump() >= where.rhs)
-                result.push_back(x);
-            else if (where.op == "<" && x.second[where.lhs].dump() < where.rhs)
-                result.push_back(x);
-            else if (where.op == "==" && x.second[where.lhs].dump() == where.rhs)
-                result.push_back(x);
-            else if (where.op == "!=" && x.second[where.lhs].dump() != where.rhs)
-                result.push_back(x);
+          auto& json_val = x.second[where.lhs];
+          if (json_val.is_number()) {
+            double val_lhs = json_val.get<double>();
+            double val_rhs = std::stod(where.rhs);
+
+            if ((where.op == ">" && val_lhs > val_rhs) ||
+              (where.op == ">=" && val_lhs >= val_rhs) ||
+              (where.op == "<" && val_lhs < val_rhs) ||
+              (where.op == "<=" && val_lhs <= val_rhs) ||
+              (where.op == "==" && val_lhs == val_rhs) ||
+              (where.op == "!=" && val_lhs != val_rhs))
+              result.push_back(x);
+          }
         }
     }
     return result;
